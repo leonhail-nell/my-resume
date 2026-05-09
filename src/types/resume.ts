@@ -19,6 +19,7 @@ export type BasicInfo = {
 export type Skill = {
   name: string;
   level: SkillLevel;
+  icon?: string;
 };
 
 export type Experience = {
@@ -69,24 +70,24 @@ export const DEFAULT_RESUME: ResumeData = {
     hobbies: ["Playing Basketball", "Watching Anime"],
   },
   skills: [
-    { name: "PHP", level: 5 },
-    { name: "LARAVEL", level: 5 },
-    { name: "LIVEWIRE", level: 3 },
-    { name: "JAVASCRIPT", level: 5 },
-    { name: "TYPESCRIPT", level: 5 },
-    { name: "VUEJS", level: 5 },
-    { name: "NUXTJS", level: 5 },
-    { name: "INERTIAJS", level: 4 },
-    { name: "QUASAR", level: 4 },
-    { name: "REACTJS", level: 4 },
-    { name: "NEXTJS", level: 4 },
-    { name: "HTML", level: 5 },
-    { name: "CSS", level: 5 },
-    { name: "TAILWIND", level: 5 },
-    { name: "VUETIFY", level: 5 },
-    { name: "ELEMENTUI", level: 5 },
-    { name: "MUI", level: 5 },
-    { name: "GIT", level: 5 },
+    { name: "PHP", level: 5, icon: "SiPhp" },
+    { name: "LARAVEL", level: 5, icon: "SiLaravel" },
+    { name: "LIVEWIRE", level: 3, icon: "SiLaravel" },
+    { name: "JAVASCRIPT", level: 5, icon: "SiJavascript" },
+    { name: "TYPESCRIPT", level: 5, icon: "SiTypescript" },
+    { name: "VUEJS", level: 5, icon: "SiVuedotjs" },
+    { name: "NUXTJS", level: 5, icon: "SiNuxtdotjs" },
+    { name: "INERTIAJS", level: 4, icon: "SiInertia" },
+    { name: "QUASAR", level: 4, icon: "SiQuasar" },
+    { name: "REACTJS", level: 4, icon: "SiReact" },
+    { name: "NEXTJS", level: 4, icon: "SiNextdotjs" },
+    { name: "HTML", level: 5, icon: "SiHtml5" },
+    { name: "CSS", level: 5, icon: "SiCss3" },
+    { name: "TAILWIND", level: 5, icon: "SiTailwindcss" },
+    { name: "VUETIFY", level: 5, icon: "SiVuetify" },
+    { name: "ELEMENTUI", level: 5, icon: "SiElement" },
+    { name: "MUI", level: 5, icon: "SiMui" },
+    { name: "GIT", level: 5, icon: "SiGit" },
   ],
   experience: [
     {
