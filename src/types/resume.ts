@@ -56,7 +56,7 @@ export type ResumeData = {
 export const DEFAULT_RESUME: ResumeData = {
   profile: {
     name: "Leonhail L. Paypa",
-    title: "Web Developer",
+    title: "Software Engineer",
     bio: "I am an experienced front-end developer for almost 6 years with expertise in Vue.js. Experienced with Tailwind, Typescript, Vuetify, Nuxt.js, React.js, Next.js, Inertia.js and Laravel. Goal-oriented and driven.",
     phone: "09395146122",
     email: "leonhaipaypa27@gmail.com",
