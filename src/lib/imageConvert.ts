@@ -21,19 +21,21 @@ export async function convertHeicToJpegIfNeeded(
     lowerName.endsWith(".heic") ||
     lowerName.endsWith(".heif");
 
-  const original = new Uint8Array(await file.arrayBuffer());
+  const arrayBuffer = await file.arrayBuffer();
 
   if (!isHeic) {
     return {
-      buffer: original,
+      buffer: new Uint8Array(arrayBuffer),
       filename: file.name,
       contentType: file.type || "application/octet-stream",
     };
   }
 
   console.log(`[upload] Converting HEIC to JPEG: ${file.name}`);
+  // heic-convert's types expect ArrayBufferLike, so pass the raw ArrayBuffer.
+  // Cast handles drift between @types/node generics and the lib's older types.
   const jpegBuffer = await convert({
-    buffer: original,
+    buffer: arrayBuffer as Parameters<typeof convert>[0]["buffer"],
     format: "JPEG",
     quality: 0.9,
   });
