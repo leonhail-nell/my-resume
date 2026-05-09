@@ -22,23 +22,19 @@
     "@vercel/blob": "^0.27.0",
     "@vercel/postgres": "^0.10.0",
     "drizzle-orm": "^0.36.0",
-    "next": "15.0.2",
+    "next": "^16.2.6",
     "next-auth": "5.0.0-beta.25",
-    "react": "19.0.0-rc-69d4b800-20241021",
-    "react-dom": "19.0.0-rc-69d4b800-20241021",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "react-hook-form": "^7.53.1"
   },
   "devDependencies": {
     "@types/node": "^22.8.1",
-    "@types/react": "npm:types-react@19.0.0-rc.1",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "drizzle-kit": "^0.28.0",
     "eslint": "^9.13.0",
-    "eslint-config-next": "15.0.2",
+    "eslint-config-next": "^16.2.6",
     "typescript": "^5.6.3"
-  },
-  "overrides": {
-    "@types/react": "npm:types-react@19.0.0-rc.1",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
   }
 }
