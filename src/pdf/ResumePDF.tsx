@@ -5,24 +5,16 @@ import {
   View,
   StyleSheet,
   Image,
-  Font,
+  Svg,
+  Path,
 } from "@react-pdf/renderer";
-import type { ResumeData, Skill } from "@/types/resume";
+import type { ResumeData, Skill, Project } from "@/types/resume";
 
-// Register EB Garamond from Google Fonts (works at PDF render time on Vercel).
-Font.register({
-  family: "EB Garamond",
-  fonts: [
-    {
-      src: "https://fonts.gstatic.com/s/ebgaramond/v27/SlGDmQSNjdsmc35JDF1K5FRyTfOwVKitcc4yyjI.ttf",
-      fontWeight: 400,
-    },
-    {
-      src: "https://fonts.gstatic.com/s/ebgaramond/v27/SlGFmQSNjdsmc35JDF1K5GRwSDw_ZAPstd6tuIM.ttf",
-      fontWeight: 600,
-    },
-  ],
-});
+// Built-in PDF fonts — no remote fetching.
+const SERIF_FONT = "Times-Roman";
+const SANS_FONT = "Helvetica";
+const SANS_FONT_OBLIQUE = "Helvetica-Oblique";
+const SANS_FONT_BOLD = "Helvetica-Bold";
 
 const COLORS = {
   text: "#3A3A3A",
@@ -33,83 +25,150 @@ const COLORS = {
   skillEmpty: "#D5D5D5",
   border: "#EEEEEE",
   placeholderBg: "#E5E5E5",
+  placeholderBorder: "#BDBDBD",
 };
 
+// COMPACT layout — designed to fit one A4 page like the original PDF reference.
 const styles = StyleSheet.create({
-  page: { backgroundColor: "#FFFFFF", padding: 0, fontSize: 10, color: COLORS.text },
+  page: { backgroundColor: "#FFFFFF", padding: 0, fontSize: 9, color: COLORS.text },
   header: {
     flexDirection: "row",
-    paddingHorizontal: 30,
-    paddingTop: 30,
-    paddingBottom: 12,
+    paddingHorizontal: 28,
+    paddingTop: 24,
+    paddingBottom: 10,
+    alignItems: "center",
   },
-  photoBox: { width: 140, height: 140, marginRight: 24, alignItems: "center" },
-  photo: { width: 140, height: 140, borderRadius: 70, objectFit: "cover" },
+  photoBox: { width: 110, height: 110, marginRight: 18 },
+  photo: { width: 110, height: 110, borderRadius: 55, objectFit: "cover" },
   photoPlaceholder: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
+    width: 110,
+    height: 110,
+    borderRadius: 55,
     backgroundColor: COLORS.placeholderBg,
+    borderWidth: 1,
+    borderColor: COLORS.placeholderBorder,
     alignItems: "center",
     justifyContent: "center",
   },
-  name: { fontFamily: "EB Garamond", fontSize: 32, color: COLORS.text },
-  title: { fontFamily: "EB Garamond", fontSize: 18, color: COLORS.text, marginTop: 2 },
-  bio: { fontSize: 10, color: COLORS.text, marginTop: 8, lineHeight: 1.5 },
+  photoPlaceholderText: {
+    fontFamily: SANS_FONT,
+    fontSize: 9,
+    color: COLORS.textSecondary,
+  },
+  name: { fontFamily: SERIF_FONT, fontSize: 26, color: COLORS.text },
+  title: { fontFamily: SERIF_FONT, fontSize: 14, color: COLORS.text, marginTop: 2 },
+  bio: {
+    fontFamily: SANS_FONT,
+    fontSize: 9,
+    color: COLORS.text,
+    marginTop: 6,
+    lineHeight: 1.4,
+  },
   band: {
     backgroundColor: COLORS.band,
-    paddingHorizontal: 30,
-    paddingVertical: 10,
+    paddingHorizontal: 28,
+    paddingVertical: 8,
     flexDirection: "row",
   },
-  bandLabel: { fontSize: 8, color: COLORS.textSecondary, marginBottom: 1 },
-  bandValue: { fontSize: 10, color: COLORS.text },
-  bandColPhone: { width: 160 },
-  bandColRest: { flexDirection: "row", flex: 1, gap: 24 },
+  bandLabel: {
+    fontFamily: SANS_FONT,
+    fontSize: 7.5,
+    color: COLORS.textSecondary,
+    marginBottom: 1,
+  },
+  bandValue: { fontFamily: SANS_FONT, fontSize: 9, color: COLORS.text },
+  bandColPhone: { width: 145 },
+  bandColRest: { flexDirection: "row", flex: 1, gap: 20 },
   body: { flexDirection: "row" },
-  sidebar: { width: 200, paddingHorizontal: 24, paddingVertical: 18 },
+  sidebar: { width: 175, paddingHorizontal: 20, paddingVertical: 14 },
   main: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 18,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
     borderLeftWidth: 1,
     borderLeftColor: COLORS.border,
   },
   sectionHeading: {
-    fontFamily: "EB Garamond",
-    fontSize: 16,
+    fontFamily: SERIF_FONT,
+    fontSize: 13,
     color: COLORS.text,
-    paddingBottom: 3,
-    marginBottom: 8,
+    paddingBottom: 2,
+    marginBottom: 6,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.divider,
   },
-  field: { marginBottom: 8 },
-  fieldLabel: { fontFamily: "EB Garamond", fontSize: 12, color: COLORS.text },
-  fieldValue: { fontSize: 9.5, color: COLORS.textSecondary },
+  field: { marginBottom: 6 },
+  fieldLabel: { fontFamily: SERIF_FONT, fontSize: 11, color: COLORS.text },
+  fieldValue: {
+    fontFamily: SANS_FONT,
+    fontSize: 8.5,
+    color: COLORS.textSecondary,
+    marginTop: 1,
+  },
   skillRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 4,
+    marginBottom: 2.5,
   },
-  skillName: { fontFamily: "EB Garamond", fontSize: 12, color: COLORS.text },
-  skillBoxes: { flexDirection: "row", gap: 2 },
-  skillBox: { width: 9, height: 9 },
-  workItem: { flexDirection: "row", marginBottom: 12 },
-  workDate: { width: 110, fontSize: 9.5, color: COLORS.textSecondary, paddingTop: 2 },
+  skillName: { fontFamily: SERIF_FONT, fontSize: 10, color: COLORS.text },
+  skillBoxes: { flexDirection: "row", gap: 1.5 },
+  skillBox: { width: 7, height: 7 },
+  workItem: { flexDirection: "row", marginBottom: 8 },
+  workDate: {
+    width: 90,
+    fontFamily: SANS_FONT,
+    fontSize: 8.5,
+    color: COLORS.textSecondary,
+    paddingTop: 1,
+  },
   workBody: { flex: 1 },
-  workRole: { fontFamily: "EB Garamond", fontSize: 13, color: COLORS.text },
-  workCompany: { fontStyle: "italic", fontSize: 9.5, color: COLORS.textSecondary, marginTop: 2 },
-  workArrangement: { fontStyle: "italic", fontSize: 9.5, color: COLORS.textSecondary },
-  bullet: { flexDirection: "row", marginTop: 4, gap: 6 },
-  bulletArrow: { fontSize: 11, color: COLORS.text, marginTop: -1 },
-  bulletText: { flex: 1, fontSize: 9.5, color: COLORS.text, lineHeight: 1.5 },
-  projectRow: { flexDirection: "row", marginBottom: 4, alignItems: "flex-start" },
-  projectName: { width: 110, flexDirection: "row", alignItems: "center", gap: 4 },
-  projectArrow: { fontSize: 11, color: COLORS.text },
-  projectNameText: { fontSize: 9.5, color: COLORS.text, fontWeight: 600 },
-  projectDesc: { flex: 1, fontStyle: "italic", fontSize: 9.5, color: COLORS.textSecondary },
+  workRole: { fontFamily: SERIF_FONT, fontSize: 11, color: COLORS.text },
+  workCompany: {
+    fontFamily: SANS_FONT_OBLIQUE,
+    fontSize: 8.5,
+    color: COLORS.textSecondary,
+    marginTop: 1,
+  },
+  workArrangement: {
+    fontFamily: SANS_FONT_OBLIQUE,
+    fontSize: 8.5,
+    color: COLORS.textSecondary,
+  },
+  bullet: {
+    flexDirection: "row",
+    marginTop: 2.5,
+    gap: 4,
+    alignItems: "flex-start",
+  },
+  bulletText: {
+    flex: 1,
+    fontFamily: SANS_FONT,
+    fontSize: 8.5,
+    color: COLORS.text,
+    lineHeight: 1.4,
+  },
+  arrowSvg: { marginTop: 1 },
+  // Projects in two columns to keep them on one page
+  projectsGrid: { flexDirection: "row", flexWrap: "wrap" },
+  projectCol: { width: "50%", paddingRight: 6 },
+  projectRow: {
+    flexDirection: "row",
+    marginBottom: 3,
+    alignItems: "center",
+    gap: 4,
+  },
+  projectNameText: {
+    fontFamily: SANS_FONT_BOLD,
+    fontSize: 8.5,
+    color: COLORS.text,
+  },
+  projectDesc: {
+    fontFamily: SANS_FONT_OBLIQUE,
+    fontSize: 8.5,
+    color: COLORS.textSecondary,
+    flex: 1,
+  },
 });
 
 function formatDate(value: string): string {
@@ -122,6 +181,19 @@ function formatDate(value: string): string {
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
   ];
   return `${months[parseInt(m, 10) - 1] ?? ""} ${y}`.trim();
+}
+
+function ArrowIcon({ size = 8, color = COLORS.text }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" style={styles.arrowSvg}>
+      <Path
+        d="M5 12 H19 M13 6 L19 12 L13 18"
+        stroke={color}
+        strokeWidth={2.5}
+        fill="none"
+      />
+    </Svg>
+  );
 }
 
 function SkillRow({ skill }: { skill: Skill }) {
@@ -143,19 +215,40 @@ function SkillRow({ skill }: { skill: Skill }) {
   );
 }
 
-export function ResumePDF({ data }: { data: ResumeData }) {
+function ProjectRow({ project }: { project: Project }) {
+  return (
+    <View style={styles.projectRow} wrap={false}>
+      <ArrowIcon size={7} />
+      <Text style={styles.projectNameText}>{project.name}</Text>
+      <Text style={styles.projectDesc}> - {project.description}</Text>
+    </View>
+  );
+}
+
+export function ResumePDF({
+  data,
+  photoDataUrl,
+}: {
+  data: ResumeData;
+  photoDataUrl?: string;
+}) {
+  const projects = data.projects;
+  const half = Math.ceil(projects.length / 2);
+  const projectsLeft = projects.slice(0, half);
+  const projectsRight = projects.slice(half);
+
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} wrap={false}>
         {/* Header */}
-        <View style={styles.header}>
+        <View style={styles.header} wrap={false}>
           <View style={styles.photoBox}>
-            {data.profile.photoUrl ? (
+            {photoDataUrl ? (
               // eslint-disable-next-line jsx-a11y/alt-text
-              <Image src={data.profile.photoUrl} style={styles.photo} />
+              <Image src={photoDataUrl} style={styles.photo} />
             ) : (
               <View style={styles.photoPlaceholder}>
-                <Text style={{ fontSize: 60, color: "#9E9E9E" }}>·</Text>
+                <Text style={styles.photoPlaceholderText}>Photo</Text>
               </View>
             )}
           </View>
@@ -167,7 +260,7 @@ export function ResumePDF({ data }: { data: ResumeData }) {
         </View>
 
         {/* Contact band */}
-        <View style={styles.band}>
+        <View style={styles.band} wrap={false}>
           <View style={styles.bandColPhone}>
             <Text style={styles.bandLabel}>Phone</Text>
             <Text style={styles.bandValue}>{data.profile.phone}</Text>
@@ -215,7 +308,7 @@ export function ResumePDF({ data }: { data: ResumeData }) {
               ))}
             </View>
 
-            <Text style={[styles.sectionHeading, { marginTop: 12 }]}>Skills</Text>
+            <Text style={[styles.sectionHeading, { marginTop: 10 }]}>Skills</Text>
             {data.skills.map((s) => (
               <SkillRow key={s.name} skill={s} />
             ))}
@@ -225,7 +318,7 @@ export function ResumePDF({ data }: { data: ResumeData }) {
           <View style={styles.main}>
             <Text style={styles.sectionHeading}>Work History</Text>
             {data.experience.map((exp, i) => (
-              <View key={i} style={styles.workItem}>
+              <View key={i} style={styles.workItem} wrap={false}>
                 <Text style={styles.workDate}>
                   {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
                 </Text>
@@ -240,7 +333,7 @@ export function ResumePDF({ data }: { data: ResumeData }) {
                   ) : null}
                   {exp.bullets.map((b, j) => (
                     <View key={j} style={styles.bullet}>
-                      <Text style={styles.bulletArrow}>{"→"}</Text>
+                      <ArrowIcon size={8} />
                       <Text style={styles.bulletText}>{b}</Text>
                     </View>
                   ))}
@@ -250,7 +343,7 @@ export function ResumePDF({ data }: { data: ResumeData }) {
 
             <Text style={[styles.sectionHeading, { marginTop: 8 }]}>Education</Text>
             {data.education.map((edu, i) => (
-              <View key={i} style={styles.workItem}>
+              <View key={i} style={styles.workItem} wrap={false}>
                 <Text style={styles.workDate}>
                   {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
                 </Text>
@@ -265,15 +358,18 @@ export function ResumePDF({ data }: { data: ResumeData }) {
             ))}
 
             <Text style={[styles.sectionHeading, { marginTop: 8 }]}>My Work</Text>
-            {data.projects.map((p, i) => (
-              <View key={i} style={styles.projectRow}>
-                <View style={styles.projectName}>
-                  <Text style={styles.projectArrow}>{"→"}</Text>
-                  <Text style={styles.projectNameText}>{p.name}</Text>
-                </View>
-                <Text style={styles.projectDesc}>- {p.description}</Text>
+            <View style={styles.projectsGrid}>
+              <View style={styles.projectCol}>
+                {projectsLeft.map((p, i) => (
+                  <ProjectRow key={i} project={p} />
+                ))}
               </View>
-            ))}
+              <View style={styles.projectCol}>
+                {projectsRight.map((p, i) => (
+                  <ProjectRow key={i} project={p} />
+                ))}
+              </View>
+            </View>
           </View>
         </View>
       </Page>
